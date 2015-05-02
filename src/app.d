@@ -4,7 +4,7 @@ import std.math : fmax, fmin;
 import allegro5.allegro;
 import allegro5.allegro_image;
 import allegro5.allegro_color;
-import tiled;
+import dtiled;
 
 private enum {
   displayWidth  = 800,
