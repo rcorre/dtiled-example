@@ -2,7 +2,7 @@
 module tilemap;
 
 // phobos
-import std.range     : chunks;
+import std.range     : zip, chunks;
 import std.array     : array;
 import std.algorithm : map;
 
@@ -24,16 +24,25 @@ struct Tile {
   Rect2i terrainRect; /// section of sprite atlas used to draw tile
   Rect2i featureRect; /// section of sprite atlas used to draw tile
 
-  this(TiledGid gid, TilesetData tileset) {
+  this(TiledGid terrainGid, TiledGid featureGid, TilesetData tileset) {
     Tile tile;
-    // a gid of 0 would indicate no tile at that position
-    if (gid) {
-      terrainName = tileset.tileProperties(gid).get("name", "unknown");
 
-      terrainRect.x = tileset.tileOffsetX(gid);
-      terrainRect.y = tileset.tileOffsetY(gid);
+    if (terrainGid) {
+      terrainName = tileset.tileProperties(terrainGid).get("name", "unknown");
+
+      terrainRect.x = tileset.tileOffsetX(terrainGid);
+      terrainRect.y = tileset.tileOffsetY(terrainGid);
       terrainRect.w = tileset.tileWidth;
       terrainRect.h = tileset.tileHeight;
+    }
+
+    if (featureGid) {
+      terrainName = tileset.tileProperties(featureGid).get("name", "unknown");
+
+      featureRect.x = tileset.tileOffsetX(featureGid);
+      featureRect.y = tileset.tileOffsetY(featureGid);
+      featureRect.w = tileset.tileWidth;
+      featureRect.h = tileset.tileHeight;
     }
   }
 }
@@ -49,24 +58,43 @@ auto buildMap(string dataPath) {
     auto tileset = data.getTileset("ground");
 
     auto tiles = groundLayer.data
-      .chunks(data.numCols)                // group together rows
-      .map!(row => row                     // for each row
-          .map!(gid => Tile(gid, tileset)) // generate a tile from each GID
-          .array)                          // create an array for that row
-      .array;                              // create an array of all the rows
+      .zip(featureLayer.data)          // pair together terrain and feature gids
+      .chunks(data.numCols)            // group together rows
+      .map!(chunk => chunk
+          .map!(gids => Tile(gids[0], gids[1], tileset)) // generate a tile from each GID pair
+          .array)
+      .array;                          // create an array of all the rows
 
     return OrthoMap!Tile(data.tileWidth, data.tileHeight, tiles);
 }
 
 void drawMap(OrthoMap!Tile map, ALLEGRO_BITMAP* atlas) {
+  // this is an optimization for drawing multiple times from the same bitmap
+  al_hold_bitmap_drawing(true);
+
   foreach(coord, tile ; map) {
     auto pos = map.tileOffset(coord);
-    auto region = tile.terrainRect;
 
-    al_draw_bitmap_region(
-        atlas,                                  // bitmap
-        region.x, region.y, region.w, region.h, // region of bitmap
-        pos.x, pos.y,                           // offset of tile
-        0);                                     // flags
+    // draw ground sprite
+    auto region = tile.terrainRect;
+    if (region.w > 0) {
+      al_draw_bitmap_region(
+          atlas,                                  // bitmap
+          region.x, region.y, region.w, region.h, // region of bitmap
+          pos.x, pos.y,                           // offset of tile
+          0);                                     // flags
+    }
+
+    // draw feature sprite (e.g. tree, mountain)
+    region = tile.featureRect;
+    if (region.w > 0) {
+      al_draw_bitmap_region(
+          atlas,                                  // bitmap
+          region.x, region.y, region.w, region.h, // region of bitmap
+          pos.x, pos.y,                           // offset of tile
+          0);                                     // flags
+    }
   }
+
+  al_hold_bitmap_drawing(false);
 }
