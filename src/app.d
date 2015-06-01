@@ -1,15 +1,21 @@
 import std.stdio;
 
+// phobos
 import std.math : fmax, fmin;
+
+// allegro
 import allegro5.allegro;
 import allegro5.allegro_image;
 import allegro5.allegro_color;
-import dtiled;
+
+// local
+import tilemap;
 
 private enum {
   displayWidth  = 800,
   displayHeight = 600,
   cameraSpeed   = 5,
+  mapDataPath   = "./content/map1.json"
 }
 
 // the camera will allow us to scroll around the map
@@ -51,22 +57,15 @@ int main(char[][] args)
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_timer_event_source(timer));
 
-    // load the image we will use to draw tiles
-    ALLEGRO_BITMAP* tileAtlas = al_load_bitmap("./content/ground.png");
-
-    // load the map
-    auto map = MapData.load("./content/map1.json");
-
-    // the layers determine which tiles go where
-    auto groundLayer = map.getLayer("Ground");
-    auto featureLayer = map.getLayer("Features");
-
-    // the tileset contains data about the tiles
-    auto tileset = map.getTileset("ground");
-
     with(ALLEGRO_BLEND_MODE) {
       al_set_blender(ALLEGRO_BLEND_OPERATIONS.ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
     }
+
+    // load the image we will use to draw tiles
+    ALLEGRO_BITMAP* tileAtlas = al_load_bitmap("./content/ground.png");
+
+    // build the map
+    auto map = buildMap(mapDataPath);
 
     // set up the camera
     Camera camera;
@@ -148,8 +147,7 @@ int main(char[][] args)
         auto transform = camera.transform;
         al_use_transform(&transform);
         al_clear_to_color(ALLEGRO_COLOR(0, 0, 0, 0));
-        map.drawLayer(groundLayer, tileset, tileAtlas);
-        map.drawLayer(featureLayer, tileset, tileAtlas);
+        drawMap(map, tileAtlas);
         al_flip_display();
       }
     }
@@ -158,22 +156,3 @@ int main(char[][] args)
   });
 }
 
-void drawLayer(MapData map, LayerData layer, TilesetData tileset, ALLEGRO_BITMAP* atlas) {
-  foreach(idx, gid ; layer.data) {
-    if (gid == 0) { continue; } // no tile at this spot
-
-    // based on the current index and the map grid size, we can determine where the top-left of the
-    // tile should be drawn.
-    float dx = layer.idxToCol(idx) * map.tileWidth;
-    float dy = layer.idxToRow(idx) * map.tileHeight;
-
-    // the GID is used as an index into the tileset, and tells us what region of the tile atlas
-    // should be used to draw the tile.
-    float sx = tileset.tileOffsetX(gid);
-    float sy = tileset.tileOffsetY(gid);
-    float sw = tileset.tileWidth;
-    float sh = tileset.tileHeight;
-
-    al_draw_bitmap_region(atlas, sx, sy, sw, sh, dx, dy, 0);
-  }
-}
