@@ -1,7 +1,5 @@
 import std.stdio;
 
-// phobos
-import std.math : fmax, fmin;
 
 // allegro
 import allegro5.allegro;
@@ -9,33 +7,16 @@ import allegro5.allegro_image;
 import allegro5.allegro_color;
 
 // local
+import camera;
 import tilemap;
+import geometry;
 
 private enum {
-  displayWidth  = 800,
-  displayHeight = 600,
-  cameraSpeed   = 5,
-  mapDataPath   = "./content/map1.json"
-}
-
-// the camera will allow us to scroll around the map
-// it is very simple and does not stop at the map borders
-struct Camera {
-  float x = 0, y = 0;       // location
-  float maxX = 0, maxY = 0; // bounds
-  float velX = 0, velY = 0; // velocity
-
-  @property auto transform() {
-    ALLEGRO_TRANSFORM trans;
-    al_identity_transform(&trans);
-    al_translate_transform(&trans, -x, -y);
-    return trans;
-  }
-
-  void update() {
-    x = (x + velX).fmax(0).fmin(maxX);
-    y = (y + velY).fmax(0).fmin(maxY);
-  }
+  displayWidth    = 800,
+  displayHeight   = 600,
+  cameraSpeed     = 5,
+  framesPerSecond = 60,
+  mapDataPath     = "./content/map1.json"
 }
 
 int main(char[][] args)
@@ -47,7 +28,7 @@ int main(char[][] args)
 
     ALLEGRO_DISPLAY* display = al_create_display(displayWidth, displayHeight);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60);
+    ALLEGRO_TIMER* timer = al_create_timer(1.0 / framesPerSecond);
 
     al_install_keyboard();
     al_install_mouse();
@@ -67,10 +48,11 @@ int main(char[][] args)
     // build the map
     auto map = buildMap(mapDataPath);
 
+    float maxCameraX = map.tileWidth * map.numCols - displayWidth;
+    float maxCameraY = map.tileHeight * map.numRows - displayHeight;
+
     // set up the camera
-    Camera camera;
-    camera.maxX = map.tileWidth * map.numCols - displayWidth;
-    camera.maxY = map.tileHeight * map.numRows - displayHeight;
+    auto camera = Camera(cameraSpeed, Vector2f(maxCameraX, maxCameraY));
 
     al_start_timer(timer);
     bool exit = false;
@@ -80,61 +62,25 @@ int main(char[][] args)
       ALLEGRO_EVENT event;
       while(al_get_next_event(queue, &event))
       {
+        camera.handleInput(event);
+
         switch(event.type)
         {
-          case ALLEGRO_EVENT_DISPLAY_CLOSE:
-          {
-            exit = true;
-            break;
-          }
           case ALLEGRO_EVENT_KEY_DOWN:
           {
-            switch(event.keyboard.keycode)
-            {
-              case ALLEGRO_KEY_ESCAPE:
-              {
-                exit = true;
-                break;
-              }
-              case ALLEGRO_KEY_W:
-                camera.velY -= cameraSpeed;
-                break;
-              case ALLEGRO_KEY_S:
-                camera.velY += cameraSpeed;
-                break;
-              case ALLEGRO_KEY_A:
-                camera.velX -= cameraSpeed;
-                break;
-              case ALLEGRO_KEY_D:
-                camera.velX += cameraSpeed;
-                break;
-              default:
+            if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+              exit = true; // press ESC to end game
             }
             break;
           }
-          case ALLEGRO_EVENT_KEY_UP:
+          case ALLEGRO_EVENT_DISPLAY_CLOSE:
           {
-            switch(event.keyboard.keycode)
-            {
-              case ALLEGRO_KEY_W:
-                camera.velY += cameraSpeed;
-                break;
-              case ALLEGRO_KEY_S:
-                camera.velY -= cameraSpeed;
-                break;
-              case ALLEGRO_KEY_A:
-                camera.velX += cameraSpeed;
-                break;
-              case ALLEGRO_KEY_D:
-                camera.velX -= cameraSpeed;
-                break;
-              default:
-            }
+            exit = true; // closing the display also ends the game
             break;
           }
           case ALLEGRO_EVENT_TIMER:
           {
-            redraw = true;
+            redraw = true; // time for a new frame
             break;
           }
           default:
