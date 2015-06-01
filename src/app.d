@@ -55,7 +55,7 @@ int main(char[][] args)
     ALLEGRO_BITMAP* tileAtlas = al_load_bitmap("./content/ground.png");
 
     // load the map
-    auto map = TiledMap.load("./content/map1.json");
+    auto map = MapData.load("./content/map1.json");
 
     // the layers determine which tiles go where
     auto groundLayer = map.getLayer("Ground");
@@ -70,8 +70,8 @@ int main(char[][] args)
 
     // set up the camera
     Camera camera;
-    camera.maxX = map.tilewidth * map.width - displayWidth;
-    camera.maxY = map.tileheight * map.height - displayHeight;
+    camera.maxX = map.tileWidth * map.numCols - displayWidth;
+    camera.maxY = map.tileHeight * map.numRows - displayHeight;
 
     al_start_timer(timer);
     bool exit = false;
@@ -158,21 +158,21 @@ int main(char[][] args)
   });
 }
 
-void drawLayer(TiledMap map, TiledLayer layer, TiledTileset tileset, ALLEGRO_BITMAP* atlas) {
+void drawLayer(MapData map, LayerData layer, TilesetData tileset, ALLEGRO_BITMAP* atlas) {
   foreach(idx, gid ; layer.data) {
     if (gid == 0) { continue; } // no tile at this spot
 
     // based on the current index and the map grid size, we can determine where the top-left of the
     // tile should be drawn.
-    float dx = layer.idxToCol(idx) * map.tilewidth;
-    float dy = layer.idxToRow(idx) * map.tileheight;
+    float dx = layer.idxToCol(idx) * map.tileWidth;
+    float dy = layer.idxToRow(idx) * map.tileHeight;
 
     // the GID is used as an index into the tileset, and tells us what region of the tile atlas
     // should be used to draw the tile.
     float sx = tileset.tileOffsetX(gid);
     float sy = tileset.tileOffsetY(gid);
-    float sw = tileset.tilewidth;
-    float sh = tileset.tileheight;
+    float sw = tileset.tileWidth;
+    float sh = tileset.tileHeight;
 
     al_draw_bitmap_region(atlas, sx, sy, sw, sh, dx, dy, 0);
   }
