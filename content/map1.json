@@ -83,6 +83,10 @@
                 {
                  "name":"Road"
                 },
+             "2":
+                {
+                 "name":"Water"
+                },
              "21":
                 {
                  "name":"Wall"
