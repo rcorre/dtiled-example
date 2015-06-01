@@ -48,10 +48,9 @@ int main(char[][] args)
     // build the map
     auto map = buildMap(mapDataPath);
 
+    // set up the camera
     float maxCameraX = map.tileWidth * map.numCols - displayWidth;
     float maxCameraY = map.tileHeight * map.numRows - displayHeight;
-
-    // set up the camera
     auto camera = Camera(cameraSpeed, Vector2f(maxCameraX, maxCameraY));
 
     al_start_timer(timer);
@@ -90,8 +89,7 @@ int main(char[][] args)
       if (redraw) {
         redraw = false;
         camera.update();
-        auto transform = camera.transform;
-        al_use_transform(&transform);
+        al_use_transform(camera.transform);
         al_clear_to_color(ALLEGRO_COLOR(0, 0, 0, 0));
         drawMap(map, tileAtlas);
         al_flip_display();
