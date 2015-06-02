@@ -2,6 +2,7 @@
 module tilemap;
 
 // phobos
+import std.conv      : to;
 import std.range     : zip, chunks;
 import std.array     : array;
 import std.algorithm : map;
@@ -19,10 +20,13 @@ import geometry;
 
 /// represents a single tile within the map
 struct Tile {
-  string terrainName; /// name of terrain from map data
-  string featureName; /// name of feature (tree/wall/ect.) from map data. null if no feature.
-  Rect2i terrainRect; /// section of sprite atlas used to draw tile
-  Rect2i featureRect; /// section of sprite atlas used to draw tile
+  const {
+    string terrainName; /// name of terrain from map data
+    string featureName; /// name of feature (tree/wall/ect.) from map data. null if no feature.
+    Rect2i terrainRect; /// section of sprite atlas used to draw tile
+    Rect2i featureRect; /// section of sprite atlas used to draw tile
+    bool isObstruction; /// a custom property set in Tiled
+  }
 
   this(TiledGid terrainGid, TiledGid featureGid, TilesetData tileset) {
     Tile tile;
@@ -30,19 +34,21 @@ struct Tile {
     if (terrainGid) {
       terrainName = tileset.tileProperties(terrainGid).get("name", null);
 
-      terrainRect.x = tileset.tileOffsetX(terrainGid);
-      terrainRect.y = tileset.tileOffsetY(terrainGid);
-      terrainRect.w = tileset.tileWidth;
-      terrainRect.h = tileset.tileHeight;
+      terrainRect = Rect2i(tileset.tileOffsetX(terrainGid),
+                           tileset.tileOffsetY(terrainGid),
+                           tileset.tileWidth,
+                           tileset.tileHeight);
+
+      isObstruction = tileset.tileProperties(terrainGid).get("obstruction", "false").to!bool;
     }
 
     if (featureGid) {
       featureName = tileset.tileProperties(featureGid).get("name", null);
 
-      featureRect.x = tileset.tileOffsetX(featureGid);
-      featureRect.y = tileset.tileOffsetY(featureGid);
-      featureRect.w = tileset.tileWidth;
-      featureRect.h = tileset.tileHeight;
+      featureRect = Rect2i(tileset.tileOffsetX(featureGid),
+                           tileset.tileOffsetY(featureGid),
+                           tileset.tileWidth,
+                           tileset.tileHeight);
     }
   }
 }
@@ -76,7 +82,7 @@ void drawMap(OrthoMap!Tile map, ALLEGRO_BITMAP* atlas) {
     auto pos = map.tileOffset(coord);
 
     // draw ground sprite
-    auto region = tile.terrainRect;
+    Rect2i region = tile.terrainRect;
     if (region.w > 0) {
       al_draw_bitmap_region(
           atlas,                                  // bitmap

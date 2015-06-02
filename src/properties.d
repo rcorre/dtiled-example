@@ -14,7 +14,7 @@ import tilemap;
 
 private enum {
   // bounds of rectangle to draw
-  rectLeft   = 700,
+  rectLeft   = 650,
   rectTop    = 550,
   rectRight  = 800,
   rectBottom = 600,
@@ -27,6 +27,10 @@ private enum {
   featureNameX = rectLeft,
   featureNameY = rectTop + 20,
 
+  // bounds of obstruction text
+  obstructionX = rectLeft,
+  obstructionY = rectTop + 20,
+
   // colors
   rectColor = ALLEGRO_COLOR(1, 1, 1, 0.25),
   textColor = ALLEGRO_COLOR(0.5, 0, 0, 1),
@@ -38,4 +42,8 @@ void drawTileProperties(in Tile tile, in ALLEGRO_FONT* font) {
 
   al_draw_text(font, textColor, terrainNameX, terrainNameY, 0, tile.terrainName.toStringz);
   al_draw_text(font, textColor, featureNameX, featureNameY, 0, tile.featureName.toStringz);
+
+  if (tile.isObstruction) {
+    al_draw_text(font, textColor, obstructionX, obstructionY, 0, "Obstructs Movement");
+  }
 }

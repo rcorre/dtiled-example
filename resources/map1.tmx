@@ -89,16 +89,19 @@
   <tile id="21">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="22">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="23">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="25">
@@ -124,16 +127,19 @@
   <tile id="31">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="32">
    <properties>
     <property name="name" value="Stone"/>
+    <property name="obstruction" value="false"/>
    </properties>
   </tile>
   <tile id="33">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="35" terrain="1,1,1,0">
@@ -164,16 +170,19 @@
   <tile id="41">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="42">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="43">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="45" terrain="1,0,1,1">

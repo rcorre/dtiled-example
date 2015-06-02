@@ -97,15 +97,18 @@
                 },
              "21":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "22":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "23":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "25":
                 {
@@ -125,15 +128,18 @@
                 },
              "31":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "32":
                 {
-                 "name":"Stone"
+                 "name":"Stone",
+                 "obstruction":"false"
                 },
              "33":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "35":
                 {
@@ -161,15 +167,18 @@
                 },
              "41":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "42":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "43":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "45":
                 {
