@@ -15,6 +15,7 @@ struct Camera {
   private {
     const float speed;
     Vector2f _position, _velocity, _maxPosition;
+    ALLEGRO_TRANSFORM _trans;
   }
 
   this(float speed, Vector2f maxPosition) {
@@ -24,19 +25,17 @@ struct Camera {
     _velocity = Vector2f(0,0);
   }
 
-  // compute the transform that performs a translation based on the camera position
-  @property auto transform() {
-    ALLEGRO_TRANSFORM trans;
-    al_identity_transform(&trans);
-    al_translate_transform(&trans, -_position.x, -_position.y);
-    return trans;
-  }
+  @property const auto transform() { return &_trans; }
 
   // move the camera based on its current velocity
   void update() {
     // keep position inside map
     _position.x = (_position.x + _velocity.x).fmax(0).fmin(_maxPosition.x);
     _position.y = (_position.y + _velocity.y).fmax(0).fmin(_maxPosition.y);
+
+    // compute the transform that performs a translation based on the camera position
+    al_identity_transform(&_trans);
+    al_translate_transform(&_trans, -_position.x, -_position.y);
   }
 
   /// Adjust the velocity based on keyboard input events
