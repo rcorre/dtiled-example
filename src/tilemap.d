@@ -20,6 +20,8 @@ import geometry;
 
 /// represents a single tile within the map
 struct Tile {
+  ALLEGRO_COLOR tint; /// color to shade tile with when drawing
+
   const {
     string terrainName; /// name of terrain from map data
     string featureName; /// name of feature (tree/wall/ect.) from map data. null if no feature.
@@ -30,6 +32,7 @@ struct Tile {
 
   this(TiledGid terrainGid, TiledGid featureGid, TilesetData tileset) {
     Tile tile;
+    tint = al_map_rgb(255,255,255);
 
     if (terrainGid) {
       terrainName = tileset.tileProperties(terrainGid).get("name", null);
@@ -84,8 +87,9 @@ void drawMap(OrthoMap!Tile map, ALLEGRO_BITMAP* atlas) {
     // draw ground sprite
     Rect2i region = tile.terrainRect;
     if (region.w > 0) {
-      al_draw_bitmap_region(
+      al_draw_tinted_bitmap_region(
           atlas,                                  // bitmap
+          tile.tint,                              // color
           region.x, region.y, region.w, region.h, // region of bitmap
           pos.x, pos.y,                           // offset of tile
           0);                                     // flags
