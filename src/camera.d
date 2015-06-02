@@ -62,4 +62,8 @@ struct Camera {
       default:
     }
   }
+
+  auto screenToWorldPos(Vector2f pos) {
+    return Vector2f(pos.x + _position.x, pos.y + _position.y);
+  }
 }

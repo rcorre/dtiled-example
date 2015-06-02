@@ -20,7 +20,7 @@ import geometry;
 /// represents a single tile within the map
 struct Tile {
   string terrainName; /// name of terrain from map data
-  //string featureName; /// name of feature (tree/wall/ect.) from map data. null if no feature.
+  string featureName; /// name of feature (tree/wall/ect.) from map data. null if no feature.
   Rect2i terrainRect; /// section of sprite atlas used to draw tile
   Rect2i featureRect; /// section of sprite atlas used to draw tile
 
@@ -28,7 +28,7 @@ struct Tile {
     Tile tile;
 
     if (terrainGid) {
-      terrainName = tileset.tileProperties(terrainGid).get("name", "unknown");
+      terrainName = tileset.tileProperties(terrainGid).get("name", null);
 
       terrainRect.x = tileset.tileOffsetX(terrainGid);
       terrainRect.y = tileset.tileOffsetY(terrainGid);
@@ -37,7 +37,7 @@ struct Tile {
     }
 
     if (featureGid) {
-      terrainName = tileset.tileProperties(featureGid).get("name", "unknown");
+      featureName = tileset.tileProperties(featureGid).get("name", null);
 
       featureRect.x = tileset.tileOffsetX(featureGid);
       featureRect.y = tileset.tileOffsetY(featureGid);

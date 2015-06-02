@@ -13,13 +13,13 @@ import allegro5.allegro_primitives;
 import camera;
 import tilemap;
 import geometry;
+import properties;
 
 private enum {
   displayWidth    = 800,
   displayHeight   = 600,
   cameraSpeed     = 5,
   framesPerSecond = 60,
-  infoTextRegion  = Rect2i(600, 400, 200, 200),
   mapDataPath     = "./content/map1.json"
 }
 
@@ -54,7 +54,7 @@ int main(char[][] args)
     ALLEGRO_BITMAP* tileAtlas = al_load_bitmap("./content/ground.png");
 
     // load a font for drawing text
-    ALLEGRO_FONT* font = al_load_font("./content/Mecha.ttf", 12, 0);
+    ALLEGRO_FONT* font = al_load_font("./content/Mecha.ttf", 16, 0);
 
     // Keep track of the tile under the mouse
     Vector2f mousePos = Vector2f(0,0);
@@ -93,9 +93,7 @@ int main(char[][] args)
           }
           case ALLEGRO_EVENT_MOUSE_AXES:
           {
-            mousePos = Vector2f(event.mouse.x, event.mouse.y);
-            // mousePos is in screen space -- translate to tilemap space
-            al_transform_coordinates(camera.transform, &mousePos.x, &mousePos.y);
+            mousePos = camera.screenToWorldPos(Vector2f(event.mouse.x, event.mouse.y));
             break;
           }
           case ALLEGRO_EVENT_TIMER:
@@ -124,13 +122,10 @@ int main(char[][] args)
 
         // reset the transform and draw the tile's terrain name
         al_use_transform(&prevTrans);
-        auto tileUnderMouse = map.tileAtPoint(mousePos);
-        al_draw_text(font, al_map_rgb(128, 0, 0), 0, 0, 0,
-            tileUnderMouse.terrainName.toStringz);
 
-        auto coord = map.coordAtPoint(mousePos);
-        al_draw_textf(font, al_map_rgb(128, 0, 0), 0, 0, 0,
-            "%d, %d", coord.row, coord.col);
+        if (map.containsPoint(mousePos)) {
+          drawTileProperties(map.tileAtPoint(mousePos), font);
+        }
 
         // flip the display to the window
         al_flip_display();
