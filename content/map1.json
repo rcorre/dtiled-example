@@ -222,11 +222,13 @@
                 },
              "61":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "62":
                 {
-                 "name":"Wall"
+                 "name":"Wall",
+                 "obstruction":"true"
                 },
              "63":
                 {
@@ -234,7 +236,8 @@
                 },
              "64":
                 {
-                 "name":"Door"
+                 "name":"Door",
+                 "obstruction":"true"
                 },
              "7":
                 {

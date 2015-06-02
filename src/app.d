@@ -9,6 +9,9 @@ import allegro5.allegro_font;
 import allegro5.allegro_color;
 import allegro5.allegro_primitives;
 
+// dtiled
+import dtiled.algorithm;
+
 // local
 import camera;
 import tilemap;
@@ -94,6 +97,19 @@ int main(char[][] args)
           case ALLEGRO_EVENT_MOUSE_AXES:
           {
             mousePos = camera.screenToWorldPos(Vector2f(event.mouse.x, event.mouse.y));
+            break;
+          }
+          case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+          {
+            if (event.mouse.button == 1) {
+              auto origin = map.coordAtPoint(mousePos);
+              auto enclosure = map.findEnclosure!(x => x.isObstruction)(origin);
+              foreach (ref tile ; enclosure) tile.tint = al_map_rgb(255,0,0);
+            }
+            else if (event.mouse.button == 2) {
+              // right-click clears all highlights
+              foreach(ref tile ; map) tile.tint = al_map_rgb(255,255,255);
+            }
             break;
           }
           case ALLEGRO_EVENT_TIMER:

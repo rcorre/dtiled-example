@@ -228,11 +228,13 @@
   <tile id="61">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="62">
    <properties>
     <property name="name" value="Wall"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
   <tile id="63">
@@ -243,6 +245,7 @@
   <tile id="64">
    <properties>
     <property name="name" value="Door"/>
+    <property name="obstruction" value="true"/>
    </properties>
   </tile>
  </tileset>
