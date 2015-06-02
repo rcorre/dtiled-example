@@ -1,10 +1,13 @@
-import std.stdio;
-
+// phobos
+import std.string : toStringz;
 
 // allegro
 import allegro5.allegro;
 import allegro5.allegro_image;
+import allegro5.allegro_ttf;
+import allegro5.allegro_font;
 import allegro5.allegro_color;
+import allegro5.allegro_primitives;
 
 // local
 import camera;
@@ -16,6 +19,7 @@ private enum {
   displayHeight   = 600,
   cameraSpeed     = 5,
   framesPerSecond = 60,
+  infoTextRegion  = Rect2i(600, 400, 200, 200),
   mapDataPath     = "./content/map1.json"
 }
 
@@ -33,9 +37,13 @@ int main(char[][] args)
     al_install_keyboard();
     al_install_mouse();
     al_init_image_addon();
+    al_init_font_addon();
+    al_init_ttf_addon();
+    al_init_primitives_addon();
 
     al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_keyboard_event_source());
+    al_register_event_source(queue, al_get_mouse_event_source());
     al_register_event_source(queue, al_get_timer_event_source(timer));
 
     with(ALLEGRO_BLEND_MODE) {
@@ -44,6 +52,12 @@ int main(char[][] args)
 
     // load the image we will use to draw tiles
     ALLEGRO_BITMAP* tileAtlas = al_load_bitmap("./content/ground.png");
+
+    // load a font for drawing text
+    ALLEGRO_FONT* font = al_load_font("./content/Mecha.ttf", 12, 0);
+
+    // Keep track of the tile under the mouse
+    Vector2f mousePos = Vector2f(0,0);
 
     // build the map
     auto map = buildMap(mapDataPath);
@@ -77,6 +91,13 @@ int main(char[][] args)
             exit = true; // closing the display also ends the game
             break;
           }
+          case ALLEGRO_EVENT_MOUSE_AXES:
+          {
+            mousePos = Vector2f(event.mouse.x, event.mouse.y);
+            // mousePos is in screen space -- translate to tilemap space
+            al_transform_coordinates(camera.transform, &mousePos.x, &mousePos.y);
+            break;
+          }
           case ALLEGRO_EVENT_TIMER:
           {
             redraw = true; // time for a new frame
@@ -89,9 +110,29 @@ int main(char[][] args)
       if (redraw) {
         redraw = false;
         camera.update();
-        al_use_transform(camera.transform);
+
+        // clear the display
         al_clear_to_color(ALLEGRO_COLOR(0, 0, 0, 0));
+
+        // preserve the previous transform
+        ALLEGRO_TRANSFORM prevTrans;
+        al_copy_transform(&prevTrans, al_get_current_transform());
+
+        // draw the map according to the camera transform
+        al_use_transform(camera.transform);
         drawMap(map, tileAtlas);
+
+        // reset the transform and draw the tile's terrain name
+        al_use_transform(&prevTrans);
+        auto tileUnderMouse = map.tileAtPoint(mousePos);
+        al_draw_text(font, al_map_rgb(128, 0, 0), 0, 0, 0,
+            tileUnderMouse.terrainName.toStringz);
+
+        auto coord = map.coordAtPoint(mousePos);
+        al_draw_textf(font, al_map_rgb(128, 0, 0), 0, 0, 0,
+            "%d, %d", coord.row, coord.col);
+
+        // flip the display to the window
         al_flip_display();
       }
     }
@@ -99,4 +140,3 @@ int main(char[][] args)
     return 0;
   });
 }
-
