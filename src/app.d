@@ -103,8 +103,9 @@ int main(char[][] args)
           {
             if (event.mouse.button == 1) {
               auto origin = map.coordAtPoint(mousePos);
-              auto enclosure = map.findEnclosure!(x => x.isObstruction)(origin);
-              foreach (ref tile ; enclosure) tile.tint = al_map_rgb(255,0,0);
+              foreach(coord ; map.enclosedCoords!(x => x.isObstruction)(origin)) {
+                map.tileAt(coord).tint = al_map_rgb(255,0,0);
+              }
             }
             else if (event.mouse.button == 2) {
               // right-click clears all highlights
