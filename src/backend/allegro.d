@@ -23,7 +23,7 @@ class AllegroBackend : Backend {
     bool _exit, _update;
     Vector2i _scrollDirection;
 
-    void setup() {
+    void setup(Vector2i displaySize, float frameRate) {
       // basic allegro setup
       al_init();
 
@@ -112,9 +112,7 @@ class AllegroBackend : Backend {
       onWASD(_scrollDirection);
     }
 
-    int mainLoop() {
-      setup();
-
+    void mainLoop() {
       while(!_exit) {
         ALLEGRO_EVENT event;
         while(al_get_next_event(_queue, &event)) {
@@ -126,15 +124,17 @@ class AllegroBackend : Backend {
           onUpdate(this);
         }
       }
-
-      shutdown();
-      return 0;
     }
   }
 
   override {
-    int run() {
-      return al_run_allegro(&mainLoop);
+    int run(Vector2i displaySize, float frameRate) {
+      return al_run_allegro({
+          setup(displaySize, frameRate);
+          mainLoop();
+          shutdown();
+          return 0;
+      });
     }
 
     void clearDisplay() {

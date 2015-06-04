@@ -3,9 +3,6 @@ module backend.backend;
 import backend.types;
 
 abstract class Backend {
-  final int frameRate()    { return 60; }
-  final auto displaySize() { return Vector2i(800,600); }
-
   /// Called when mouse is clicked, passed the button number
   void function(int) onMouseClicked;
 
@@ -20,7 +17,7 @@ abstract class Backend {
   void function(Backend) onUpdate;
 
   /// entry point. returns when program is exited
-  int run();
+  int run(Vector2i displaySize, float frameRate);
 
   /// Call before drawing any tiles. Pass the current camera offset to set up a transform.
   void startDrawingMap(Vector2f cameraOffset);

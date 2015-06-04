@@ -13,16 +13,15 @@ import tilemap;
 import backend;
 
 private enum {
-  displayWidth    = 800,
-  displayHeight   = 600,
-  cameraSpeed     = 5,
-  framesPerSecond = 60,
-  mapDataPath     = "./content/map1.json",
-  tileNormalTint  = Color(1,1,1,1),
-  tileHighlight   = Color(1,0,0,1),
-  textColor       = Color(0.8,0,0,1),
-  textBoxColor    = Color(1,1,1,0.4),
-  textBoxRegion   = Rect2f(700, 500, 100, 100)
+  displaySize    = Vector2i(800,600),
+  cameraSpeed    = 5,
+  frameRate      = 60,
+  mapDataPath    = "./content/map1.json",
+  tileNormalTint = Color(1,1,1,1),
+  tileHighlight  = Color(1,0,0,1),
+  textColor      = Color(0.8,0,0,1),
+  textBoxColor   = Color(1,1,1,0.4),
+  textBoxRegion  = Rect2f(700, 500, 100, 100)
 }
 
 private {
@@ -36,8 +35,8 @@ static this() {
   _map = buildMap(mapDataPath);
 
   // set up the camera
-  float maxCameraX = _map.tileWidth  * _map.numCols - displayWidth;
-  float maxCameraY = _map.tileHeight * _map.numRows - displayHeight;
+  float maxCameraX = _map.tileWidth  * _map.numCols - displaySize.x;
+  float maxCameraY = _map.tileHeight * _map.numRows - displaySize.y;
 
   _camera = Camera(cameraSpeed, Vector2f(maxCameraX, maxCameraY));
 }
@@ -50,18 +49,21 @@ int main(char[][] args) {
   backend.onWASD         = &onWASD;
   backend.onUpdate       = &onUpdate;
 
-  return backend.run();
+  return backend.run(displaySize, frameRate);
 }
 
 void onMouseClicked(int button) {
   if (button == 1) {
+    // LMB clicked, highlight all tiles in the enclosed area around the mouse.
+    // if the mouse is not in an enclosed area, the returned range will be empty.
     foreach(coord ; _map.enclosedCoords!(x => x.isObstruction)(_coordUnderMouse)) {
       _map.tileAt(coord).tint = tileHighlight;
     }
   }
   else {
+    // RMB clicked, iterate through all tiles to clear highlighting
     foreach(ref tile ; _map) {
-      tile.tint = Color(1,1,1,1);
+      tile.tint = tileNormalTint;
     }
   }
 }
@@ -81,7 +83,9 @@ void onUpdate(Backend backend) {
 
   backend.clearDisplay();
 
+  // draw the map tiles
   backend.startDrawingMap(_camera.offset);
+
   foreach(coord, tile ; _map) {
     auto pos = _map.tileOffset(coord).as!Vector2f;
     backend.drawTile(pos, tile.terrainRect, tile.tint);
@@ -90,8 +94,10 @@ void onUpdate(Backend backend) {
       backend.drawTile(pos, tile.featureRect, tile.tint);
     }
   }
+
   backend.endDrawingMap();
 
+  // draw a textbox showing info on the tile currently under the mouse
   auto tile = _map.tileAt(_coordUnderMouse);
   auto info = [ tile.terrainName, tile.featureName, tile.isObstruction ? "Obstruction" : "" ];
   backend.drawTextbox(textBoxRegion, info, textColor, textBoxColor);
