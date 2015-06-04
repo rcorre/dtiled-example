@@ -1,69 +1,34 @@
 // A simple camera that can scroll around the map
 module camera;
 
-// phobos
 import std.math : fmax, fmin;
-
-// allegro
-import allegro5.allegro;
-
-// local
-import geometry;
+import backend;
 
 // it is very simple and does not stop at the map borders
 struct Camera {
-  private {
-    const float speed;
-    Vector2f _position, _velocity, _maxPosition;
-    ALLEGRO_TRANSFORM _trans;
-  }
+    const float speed;     /// rate of movement in set direction per update
+    const Vector2f maxPos; /// maximum position of lower right corner
+    Vector2f offset;       /// position of top-left corner
+    Vector2i direction;    /// direction of movement
 
   this(float speed, Vector2f maxPosition) {
-    this.speed = speed;
-    _maxPosition = maxPosition;
-    _position = Vector2f(0,0);
-    _velocity = Vector2f(0,0);
+    this.speed  = speed;
+    this.maxPos = maxPosition;
+    offset      = Vector2f(0,0);
+    direction   = Vector2i(0,0);
   }
-
-  @property const auto transform() { return &_trans; }
 
   // move the camera based on its current velocity
   void update() {
+    auto dx = speed * direction.x;
+    auto dy = speed * direction.y;
+
     // keep position inside map
-    _position.x = (_position.x + _velocity.x).fmax(0).fmin(_maxPosition.x);
-    _position.y = (_position.y + _velocity.y).fmax(0).fmin(_maxPosition.y);
-
-    // compute the transform that performs a translation based on the camera position
-    al_identity_transform(&_trans);
-    al_translate_transform(&_trans, -_position.x, -_position.y);
-  }
-
-  /// Adjust the velocity based on keyboard input events
-  void handleInput(in ALLEGRO_EVENT ev) {
-    // only interested in keyboard events
-    if (ev.type != ALLEGRO_EVENT_KEY_DOWN && ev.type != ALLEGRO_EVENT_KEY_UP) return;
-
-    // change in speed
-    float delta = (ev.type == ALLEGRO_EVENT_KEY_DOWN) ? speed : -speed;
-
-    switch(ev.keyboard.keycode) {
-      case ALLEGRO_KEY_W:
-        _velocity.y -= delta;
-        break;
-      case ALLEGRO_KEY_S:
-        _velocity.y += delta;
-        break;
-      case ALLEGRO_KEY_A:
-        _velocity.x -= delta;
-        break;
-      case ALLEGRO_KEY_D:
-        _velocity.x += delta;
-        break;
-      default:
-    }
+    offset.x = (offset.x + dx).fmax(0).fmin(maxPos.x);
+    offset.y = (offset.y + dy).fmax(0).fmin(maxPos.y);
   }
 
   auto screenToWorldPos(Vector2f pos) {
-    return Vector2f(pos.x + _position.x, pos.y + _position.y);
+    return Vector2f(pos.x + offset.x, pos.y + offset.y);
   }
 }

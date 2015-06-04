@@ -7,20 +7,15 @@ import std.range     : zip, chunks;
 import std.array     : array;
 import std.algorithm : map;
 
-// allegro
-import allegro5.allegro;
-import allegro5.allegro_image;
-import allegro5.allegro_color;
-
 // dtiled
 import dtiled;
 
 // local
-import geometry;
+import backend;
 
 /// represents a single tile within the map
 struct Tile {
-  ALLEGRO_COLOR tint; /// color to shade tile with when drawing
+  Color tint; /// color to shade tile with when drawing
 
   const {
     string terrainName; /// name of terrain from map data
@@ -30,9 +25,11 @@ struct Tile {
     bool isObstruction; /// a custom property set in Tiled
   }
 
+  @property bool hasFeature() { return featureRect.width > 0; }
+
   this(TiledGid terrainGid, TiledGid featureGid, TilesetData tileset) {
     Tile tile;
-    tint = al_map_rgb(255,255,255);
+    tint = Color(1,1,1,1);
 
     if (terrainGid) {
       terrainName = tileset.tileProperties(terrainGid).get("name", null);
@@ -75,36 +72,4 @@ auto buildMap(string dataPath) {
       .array;                          // create an array of all the rows
 
     return OrthoMap!Tile(data.tileWidth, data.tileHeight, tiles);
-}
-
-void drawMap(OrthoMap!Tile map, ALLEGRO_BITMAP* atlas) {
-  // this is an optimization for drawing multiple times from the same bitmap
-  al_hold_bitmap_drawing(true);
-
-  foreach(coord, tile ; map) {
-    auto pos = map.tileOffset(coord);
-
-    // draw ground sprite
-    Rect2i region = tile.terrainRect;
-    if (region.w > 0) {
-      al_draw_tinted_bitmap_region(
-          atlas,                                  // bitmap
-          tile.tint,                              // color
-          region.x, region.y, region.w, region.h, // region of bitmap
-          pos.x, pos.y,                           // offset of tile
-          0);                                     // flags
-    }
-
-    // draw feature sprite (e.g. tree, mountain)
-    region = tile.featureRect;
-    if (region.w > 0) {
-      al_draw_bitmap_region(
-          atlas,                                  // bitmap
-          region.x, region.y, region.w, region.h, // region of bitmap
-          pos.x, pos.y,                           // offset of tile
-          0);                                     // flags
-    }
-  }
-
-  al_hold_bitmap_drawing(false);
 }
