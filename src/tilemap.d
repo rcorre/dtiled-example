@@ -25,6 +25,8 @@ struct Tile {
     bool isObstruction; /// a custom property set in Tiled
   }
 
+  @property bool hasFeature() { return featureRect.w > 0; }
+
   this(TiledGid terrainGid, TiledGid featureGid, TilesetData tileset) {
     Tile tile;
     tint = al_map_rgb(255,255,255);
@@ -70,18 +72,4 @@ auto buildMap(string dataPath) {
       .array;                          // create an array of all the rows
 
     return OrthoMap!Tile(data.tileWidth, data.tileHeight, tiles);
-}
-
-void drawMap(in OrthoMap!Tile map, Vector2f cameraOffset, Backend backend) {
-  foreach(coord, tile ; map) {
-    auto pos = map.tileOffset(coord);
-
-    // draw terrain
-    backend.drawTile(pos, cameraOffset, tile.terrainRect, tile.tint);
-
-    // if tile has a feature (e.g. tree, mountain), draw that on top of the terrain
-    if (tile.featureRect.w > 0) {
-      backend.drawTile(pos, cameraOffset, tile.featureRect, tile.tint);
-    }
-  }
 }

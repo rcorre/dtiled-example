@@ -157,14 +157,22 @@ class AllegroBackend : Backend {
 
     void drawTile(Vector2f pos, Rect2i spriteRect, Color tint) {
       al_draw_tinted_bitmap_region(
-          _tileAtlas,                             // bitmap
-          tint,                                   // color
-          region.x, region.y, region.w, region.h, // region of bitmap
-          pos.x, pos.y,                           // offset of tile
-          0);                                     // flags
+          _tileAtlas,                                      // bitmap
+          tint,                                            // color
+          region.x, region.y, region.width, region.height, // region of bitmap
+          pos.x, pos.y,                                    // offset of tile
+          0);                                              // flags
     }
 
-    void drawTextbox(Vector2f pos, string[] lines, Color textColor, Color boxColor) {
+    void drawTextbox(Rect2f rect, string[] lines, Color textColor, Color boxColor) {
+      al_draw_filled_rectangle(rect.x, rect.y, rect.right, rect.bottom, boxColor);
+
+      Vector2f pos = Vector2f(rect.x, rect.y);
+
+      foreach(line ; lines) {
+        al_draw_text(_font, textColor, pos.x, pos.y, 0, line.toStringz);
+        pos.y += al_get_font_line_height(_font);
+      }
     }
   }
 }
