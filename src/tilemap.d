@@ -7,20 +7,15 @@ import std.range     : zip, chunks;
 import std.array     : array;
 import std.algorithm : map;
 
-// allegro
-import allegro5.allegro;
-import allegro5.allegro_image;
-import allegro5.allegro_color;
-
 // dtiled
 import dtiled;
 
 // local
-import geometry;
+import backend;
 
 /// represents a single tile within the map
 struct Tile {
-  ALLEGRO_COLOR tint; /// color to shade tile with when drawing
+  Color tint; /// color to shade tile with when drawing
 
   const {
     string terrainName; /// name of terrain from map data
@@ -77,34 +72,16 @@ auto buildMap(string dataPath) {
     return OrthoMap!Tile(data.tileWidth, data.tileHeight, tiles);
 }
 
-void drawMap(OrthoMap!Tile map, ALLEGRO_BITMAP* atlas) {
-  // this is an optimization for drawing multiple times from the same bitmap
-  al_hold_bitmap_drawing(true);
-
+void drawMap(in OrthoMap!Tile map, Vector2f cameraOffset, Backend backend) {
   foreach(coord, tile ; map) {
     auto pos = map.tileOffset(coord);
 
-    // draw ground sprite
-    Rect2i region = tile.terrainRect;
-    if (region.w > 0) {
-      al_draw_tinted_bitmap_region(
-          atlas,                                  // bitmap
-          tile.tint,                              // color
-          region.x, region.y, region.w, region.h, // region of bitmap
-          pos.x, pos.y,                           // offset of tile
-          0);                                     // flags
-    }
+    // draw terrain
+    backend.drawTile(pos, cameraOffset, tile.terrainRect, tile.tint);
 
-    // draw feature sprite (e.g. tree, mountain)
-    region = tile.featureRect;
-    if (region.w > 0) {
-      al_draw_bitmap_region(
-          atlas,                                  // bitmap
-          region.x, region.y, region.w, region.h, // region of bitmap
-          pos.x, pos.y,                           // offset of tile
-          0);                                     // flags
+    // if tile has a feature (e.g. tree, mountain), draw that on top of the terrain
+    if (tile.featureRect.w > 0) {
+      backend.drawTile(pos, cameraOffset, tile.featureRect, tile.tint);
     }
   }
-
-  al_hold_bitmap_drawing(false);
 }
