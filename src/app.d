@@ -69,8 +69,11 @@ void onMouseClicked(int button) {
 }
 
 void onMouseMoved(Vector2f mousePos) {
-  if (_map.containsPoint(mousePos)) {
-    _coordUnderMouse = _map.coordAtPoint(mousePos);
+  // mouse pos is relative to screen, add camera offset to get point relative to map
+  auto mapPos = Vector2f(mousePos.x + _camera.offset.x, mousePos.y + _camera.offset.y);
+
+  if (_map.containsPoint(mapPos)) {
+    _coordUnderMouse = _map.coordAtPoint(mapPos);
   }
 }
 
