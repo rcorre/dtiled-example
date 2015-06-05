@@ -11,6 +11,7 @@ class DGameBackend : Backend {
   private {
     Window _window;
     bool _exit, _update;
+    ubyte _ticksPerFrame;
 
     void processEvent(in Event ev) {
       switch(ev.type) with (Event.Type) {
@@ -37,19 +38,22 @@ class DGameBackend : Backend {
 override:
   /// entry point. returns when program is exited
   int run(Vector2i displaySize, float frameRate) {
+    _ticksPerFrame = cast(ubyte) (1000 / frameRate);
     _window = Window(displaySize.x, displaySize.y, "DTiled DGame Demo");
-    _window.clear();
-    _window.display();
 
+    StopWatch stopWatch;
     Event event;
-    while(!_exit) {
-      _window.clear();
+    Time lastUpdateTime = stopWatch.getTime();
 
+    while(!_exit) {
       while (_window.poll(&event)) {
         processEvent(event);
       }
 
-      _window.display();
+      if (stopWatch.getTicks() >= _ticksPerFrame) {
+        onUpdate(this, stopWatch.getElapsedTime.seconds);
+        stopWatch.reset();
+      }
     }
 
     return 0;
@@ -65,10 +69,12 @@ override:
 
   /// Call before doing any drawing for the current frame.
   void clearDisplay() {
+    _window.clear();
   }
 
   /// Call after all drawing is done for the current frame.
   void flipDisplay() {
+    _window.display();
   }
 
   /// Draw a tile. Only call between calls to startDrawingMap and endDrawingMap.
