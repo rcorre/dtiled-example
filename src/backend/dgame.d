@@ -4,10 +4,13 @@ import backend.types;
 import backend.backend;
 
 import Dgame.Window;
+import Dgame.Math.Geometry;
+import Dgame.Math.Vertex;
 import Dgame.System.Font;
 import Dgame.System.StopWatch;
 import Dgame.System.Keyboard;
 import Dgame.Graphic.Text;
+import Dgame.Graphic.Shape;
 import Dgame.Graphic.Color : Color4b;
 
 class DGameBackend : Backend {
@@ -44,6 +47,7 @@ override:
   int run(Vector2i displaySize, float frameRate) {
     _ticksPerFrame = cast(ubyte) (1000 / frameRate);
     _window = Window(displaySize.x, displaySize.y, "DTiled DGame Demo");
+    _window.setClearColor(Color4b.Black);
     auto font = Font("./content/Mecha.ttf", 16);
     _text = new Text(font);
 
@@ -89,6 +93,20 @@ override:
 
   /// Draw a textbox containing the given lines of text.
   void drawTextbox(Rect2i rect, string[] lines, Color textColor, Color boxColor) {
+    Shape box = new Shape(Geometry.Quad,
+      [
+        Vertex(rect.x    , rect.y     ),
+        Vertex(rect.right, rect.y     ),
+        Vertex(rect.right, rect.bottom),
+        Vertex(rect.x    , rect.bottom),
+      ]
+    );
+
+    box.fill = Shape.Fill.Full;
+    box.setColor(Color4b(boxColor));
+
+    _window.draw(box);
+
     _text.foreground = Color4b(textColor);
     _text.x = rect.x;
     _text.y = rect.y;
