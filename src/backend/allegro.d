@@ -113,6 +113,8 @@ class AllegroBackend : Backend {
     }
 
     void mainLoop() {
+      float lastUpdateTime = al_get_time();
+
       while(!_exit) {
         ALLEGRO_EVENT event;
         while(al_get_next_event(_queue, &event)) {
@@ -120,8 +122,12 @@ class AllegroBackend : Backend {
         }
 
         if (_update) {
+          float curTime = al_get_time();
+          float delta = curTime - lastUpdateTime;
+          lastUpdateTime = curTime;
+
           _update = false;
-          onUpdate(this);
+          onUpdate(this, delta);
         }
       }
     }

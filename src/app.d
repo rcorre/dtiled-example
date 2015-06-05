@@ -14,7 +14,7 @@ import backend;
 
 private enum {
   displaySize    = Vector2i(800,600),
-  cameraSpeed    = 5,
+  cameraSpeed    = 300,
   frameRate      = 60,
   mapDataPath    = "./content/map1.json",
   tileNormalTint = Color(1,1,1,1),
@@ -81,8 +81,8 @@ void onWASD(Vector2i direction) {
   _camera.direction = direction;
 }
 
-void onUpdate(Backend backend) {
-  _camera.update();
+void onUpdate(Backend backend, float time) {
+  _camera.update(time);
 
   backend.clearDisplay();
 

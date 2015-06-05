@@ -13,8 +13,8 @@ abstract class Backend {
   /// Passed the current WASD direction (e.g. (1,1) if S and D are held)
   void function(Vector2i) onWASD;
 
-  /// Called for each new frame
-  void function(Backend) onUpdate;
+  /// Called for each new frame, passed a reference to the backend and the time elapsed
+  void function(Backend, float) onUpdate;
 
   /// entry point. returns when program is exited
   int run(Vector2i displaySize, float frameRate);

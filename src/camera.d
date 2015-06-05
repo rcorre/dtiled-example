@@ -19,9 +19,9 @@ struct Camera {
   }
 
   // move the camera based on its current velocity
-  void update() {
-    auto dx = speed * direction.x;
-    auto dy = speed * direction.y;
+  void update(float time) {
+    auto dx = speed * time * direction.x;
+    auto dy = speed * time * direction.y;
 
     // keep position inside map
     offset.x = (offset.x + dx).fmax(0).fmin(maxPos.x);
