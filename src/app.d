@@ -21,7 +21,7 @@ private enum {
   tileHighlight  = Color(1,0,0,1),
   textColor      = Color(0.8,0,0,1),
   textBoxColor   = Color(1,1,1,0.4),
-  textBoxRegion  = Rect2f(700, 500, 100, 100)
+  textBoxRegion  = Rect2i(700, 500, 100, 100)
 }
 
 private {

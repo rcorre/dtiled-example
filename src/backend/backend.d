@@ -35,5 +35,5 @@ abstract class Backend {
   void drawTile(Vector2f pos, Rect2i spriteRect, Color tint);
 
   /// Draw a textbox containing the given lines of text.
-  void drawTextbox(Rect2f rect, string[] lines, Color textColor, Color boxColor);
+  void drawTextbox(Rect2i rect, string[] lines, Color textColor, Color boxColor);
 }

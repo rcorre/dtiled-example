@@ -172,7 +172,7 @@ class AllegroBackend : Backend {
           0);                                  // flags
     }
 
-    void drawTextbox(Rect2f rect, string[] lines, Color textColor, Color boxColor) {
+    void drawTextbox(Rect2i rect, string[] lines, Color textColor, Color boxColor) {
       al_draw_filled_rectangle(rect.x, rect.y, rect.right, rect.bottom, boxColor);
 
       Vector2f pos = Vector2f(rect.x, rect.y);

@@ -2,7 +2,11 @@
 	"fileVersion": 1,
 	"versions": {
 		"allegro": "2.0.3+5.0.10",
+		"derelict-util": "2.0.0",
 		"jsonizer": "0.5.0",
-		"dtiled": "0.1.0"
+		"dtiled": "0.1.0",
+		"dgame": "0.5.3",
+		"derelict-sdl2": "1.9.5",
+		"derelict-gl3": "1.0.13"
 	}
 }
