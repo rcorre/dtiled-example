@@ -92,12 +92,14 @@ override:
 
   /// Call after all drawing is done for the current frame.
   void flipDisplay() {
-    _window.draw(_tileSprite);
     _window.display();
   }
 
   /// Draw a tile. Only call between calls to startDrawingMap and endDrawingMap.
   void drawTile(Vector2f pos, Rect2i spriteRect, Color4f tint) {
+    _tileSprite.setTextureRect(spriteRect);
+    _tileSprite.setPosition(pos);
+    _window.draw(_tileSprite);
   }
 
   /// Draw a textbox containing the given lines of text.
