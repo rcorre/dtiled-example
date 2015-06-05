@@ -9,16 +9,17 @@ import Dgame.Math.Vertex;
 import Dgame.System.Font;
 import Dgame.System.StopWatch;
 import Dgame.System.Keyboard;
-import Dgame.Graphic.Text;
-import Dgame.Graphic.Shape;
-import Dgame.Graphic.Color : Color4b;
+import Dgame.Graphic;
 
 class DGameBackend : Backend {
   private {
-    Window _window;
-    Text   _text;
-    bool   _exit, _update;
-    ubyte  _ticksPerFrame;
+    Window  _window;
+    Text    _text;
+    Surface _tileSurface;
+    Texture _tileTexture;
+    Sprite  _tileSprite;
+    bool    _exit, _update;
+    ubyte   _ticksPerFrame;
 
     void processEvent(in Event ev) {
       switch(ev.type) with (Event.Type) {
@@ -46,10 +47,17 @@ override:
   /// entry point. returns when program is exited
   int run(Vector2i displaySize, float frameRate) {
     _ticksPerFrame = cast(ubyte) (1000 / frameRate);
+
     _window = Window(displaySize.x, displaySize.y, "DTiled DGame Demo");
     _window.setClearColor(Color4b.Black);
+
     auto font = Font("./content/Mecha.ttf", 16);
     _text = new Text(font);
+
+    _tileSurface = Surface("./content/ground.png");
+    _tileTexture = Texture(_tileSurface);
+    _tileSprite = new Sprite(_tileTexture);
+    _tileSprite.setPosition(300,300);
 
     StopWatch stopWatch;
     Event event;
@@ -84,6 +92,7 @@ override:
 
   /// Call after all drawing is done for the current frame.
   void flipDisplay() {
+    _window.draw(_tileSprite);
     _window.display();
   }
 
