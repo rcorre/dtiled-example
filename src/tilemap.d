@@ -15,7 +15,7 @@ import backend;
 
 /// represents a single tile within the map
 struct Tile {
-  Color tint; /// color to shade tile with when drawing
+  Color4f tint; /// color to shade tile with when drawing
 
   const {
     string terrainName; /// name of terrain from map data
@@ -29,7 +29,7 @@ struct Tile {
 
   this(TiledGid terrainGid, TiledGid featureGid, TilesetData tileset) {
     Tile tile;
-    tint = Color(1,1,1,1);
+    tint = Color4f(1,1,1,1);
 
     if (terrainGid) {
       terrainName = tileset.tileProperties(terrainGid).get("name", null);

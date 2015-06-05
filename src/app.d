@@ -17,10 +17,10 @@ private enum {
   cameraSpeed    = 300,
   frameRate      = 60,
   mapDataPath    = "./content/map1.json",
-  tileNormalTint = Color(1,1,1,1),
-  tileHighlight  = Color(1,0,0,1),
-  textColor      = Color(0.8,0,0,1),
-  textBoxColor   = Color(1,1,1,0.4),
+  tileNormalTint = Color4f(1,1,1,1),
+  tileHighlight  = Color4f(1,0,0,1),
+  textColor      = Color4f(0.8,0,0,1),
+  textBoxColor   = Color4f(1,1,1,0.4),
   textBoxRegion  = Rect2i(700, 500, 100, 100)
 }
 
