@@ -4,14 +4,18 @@ import backend.types;
 import backend.backend;
 
 import Dgame.Window;
+import Dgame.System.Font;
 import Dgame.System.StopWatch;
 import Dgame.System.Keyboard;
+import Dgame.Graphic.Text;
+import Dgame.Graphic.Color : Color4b;
 
 class DGameBackend : Backend {
   private {
     Window _window;
-    bool _exit, _update;
-    ubyte _ticksPerFrame;
+    Text   _text;
+    bool   _exit, _update;
+    ubyte  _ticksPerFrame;
 
     void processEvent(in Event ev) {
       switch(ev.type) with (Event.Type) {
@@ -40,6 +44,8 @@ override:
   int run(Vector2i displaySize, float frameRate) {
     _ticksPerFrame = cast(ubyte) (1000 / frameRate);
     _window = Window(displaySize.x, displaySize.y, "DTiled DGame Demo");
+    auto font = Font("./content/Mecha.ttf", 16);
+    _text = new Text(font);
 
     StopWatch stopWatch;
     Event event;
@@ -83,5 +89,14 @@ override:
 
   /// Draw a textbox containing the given lines of text.
   void drawTextbox(Rect2i rect, string[] lines, Color textColor, Color boxColor) {
+    _text.foreground = Color4b(textColor);
+    _text.x = rect.x;
+    _text.y = rect.y;
+
+    foreach (line ; lines) {
+      _text.setData(line);
+      _window.draw(_text);
+      _text.y = _text.y + _text.height;
+    }
   }
 }
