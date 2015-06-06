@@ -13,13 +13,14 @@ import Dgame.Graphic;
 
 class DGameBackend : Backend {
   private {
-    Window  _window;
-    Text    _text;
-    Surface _tileSurface;
-    Texture _tileTexture;
-    Sprite  _tileSprite;
-    bool    _exit, _update;
-    ubyte   _ticksPerFrame;
+    Window   _window;
+    Text     _text;
+    Surface  _tileSurface;
+    Texture  _tileTexture;
+    Sprite   _tileSprite;
+    Vector2f _cameraOffset;
+    bool     _exit, _update;
+    ubyte    _ticksPerFrame;
 
     void processEvent(in Event ev) {
       switch(ev.type) with (Event.Type) {
@@ -79,10 +80,12 @@ override:
 
   /// Call before drawing any tiles. Pass the current camera offset to set up a transform.
   void startDrawingMap(Vector2f cameraOffset) {
+    _cameraOffset = cameraOffset;
   }
 
   /// Call after drawing tiles is done to clear camera transform
   void endDrawingMap() {
+    _cameraOffset = Vector2f(0,0);
   }
 
   /// Call before doing any drawing for the current frame.
@@ -98,7 +101,7 @@ override:
   /// Draw a tile. Only call between calls to startDrawingMap and endDrawingMap.
   void drawTile(Vector2f pos, Rect2i spriteRect, Color4f tint) {
     _tileSprite.setTextureRect(spriteRect);
-    _tileSprite.setPosition(pos);
+    _tileSprite.setPosition(pos + _cameraOffset);
     _window.draw(_tileSprite);
   }
 
