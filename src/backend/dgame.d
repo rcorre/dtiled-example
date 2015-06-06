@@ -41,6 +41,12 @@ class DGameBackend : Backend {
             handleWASD(ev.keyboard.key, -1);
           }
           break;
+        case MouseMotion:
+          onMouseMoved(Vector2f(ev.mouse.motion.x, ev.mouse.motion.y));
+          break;
+        case MouseButtonDown:
+          onMouseClicked(cast(uint)ev.mouse.button.button);
+          break;
         default:
       }
     }
