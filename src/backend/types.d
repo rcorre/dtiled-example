@@ -15,7 +15,7 @@ version (AllegroBackend) {
   alias Vector2i = Vector2!int;
   alias Vector2f = Vector2!float;
 
-  struct Rect {
+  struct Rect2i {
     int x, y;
     uint width, height;
   }

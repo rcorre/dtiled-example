@@ -18,6 +18,7 @@ class DGameBackend : Backend {
     Surface  _tileSurface;
     Texture  _tileTexture;
     Sprite   _tileSprite;
+    Vector2i _scrollDirection;
     Vector2f _cameraOffset;
     bool     _exit, _update;
     ubyte    _ticksPerFrame;
@@ -28,19 +29,41 @@ class DGameBackend : Backend {
           _exit = true;
           break;
         case KeyDown:
-        case KeyUp:
           if (ev.keyboard.key == Keyboard.Key.Esc) {
             _exit = true;
           }
-          else {
-            handleWASD(ev);
+          else if (!ev.keyboard.isRepeat) {
+            handleWASD(ev.keyboard.key, 1);
+          }
+          break;
+        case KeyUp:
+          if (!ev.keyboard.isRepeat) {
+            handleWASD(ev.keyboard.key, -1);
           }
           break;
         default:
       }
     }
 
-    void handleWASD(in Event ev) {
+    void handleWASD(Keyboard.Key key, int factor) {
+      switch (key) with (Keyboard.Key) {
+        case W:
+          _scrollDirection.y -= factor;
+          break;
+        case S:
+          _scrollDirection.y += factor;
+          break;
+        case A:
+          _scrollDirection.x -= factor;
+          break;
+        case D:
+          _scrollDirection.x += factor;
+          break;
+        default:
+          return;
+      }
+
+      onWASD(_scrollDirection);
     }
   }
 
@@ -69,8 +92,8 @@ override:
         processEvent(event);
       }
 
-      if (stopWatch.getTicks() >= _ticksPerFrame) {
-        onUpdate(this, stopWatch.getElapsedTime.seconds);
+      if (stopWatch.getElapsedTicks() >= _ticksPerFrame) {
+        onUpdate(this, stopWatch.getElapsedTicks / 1000f);
         stopWatch.reset();
       }
     }
@@ -101,7 +124,7 @@ override:
   /// Draw a tile. Only call between calls to startDrawingMap and endDrawingMap.
   void drawTile(Vector2f pos, Rect2i spriteRect, Color4f tint) {
     _tileSprite.setTextureRect(spriteRect);
-    _tileSprite.setPosition(pos + _cameraOffset);
+    _tileSprite.setPosition(pos - _cameraOffset);
     _window.draw(_tileSprite);
   }
 
