@@ -123,6 +123,7 @@ override:
 
   /// Draw a tile. Only call between calls to startDrawingMap and endDrawingMap.
   void drawTile(Vector2f pos, Rect2i spriteRect, Color4f tint) {
+    _tileSprite.setColor(Color4b(tint));
     _tileSprite.setTextureRect(spriteRect);
     _tileSprite.setPosition(pos - _cameraOffset);
     _window.draw(_tileSprite);

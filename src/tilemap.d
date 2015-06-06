@@ -29,7 +29,7 @@ struct Tile {
 
   this(TiledGid terrainGid, TiledGid featureGid, TilesetData tileset) {
     Tile tile;
-    tint = Color4f(1,1,1,1);
+    tint = Color4f(1f,1f,1f,1f);
 
     if (terrainGid) {
       terrainName = tileset.tileProperties(terrainGid).get("name", null);
