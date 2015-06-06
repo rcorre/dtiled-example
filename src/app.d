@@ -49,7 +49,9 @@ int main(char[][] args) {
   backend.onWASD         = &onWASD;
   backend.onUpdate       = &onUpdate;
 
-  return backend.run(displaySize, frameRate);
+  int retval = backend.run(displaySize, frameRate);
+  backend.destroy(); // cleanup is necessary for Dgame to avoid exiting with an error
+  return retval;
 }
 
 void onMouseClicked(int button) {
