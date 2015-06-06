@@ -1,4 +1,5 @@
 // phobos
+import std.range : InputRange, inputRangeObject;
 import std.string : toStringz;
 
 // dtiled
@@ -21,13 +22,14 @@ private enum {
   tileHighlight  = Color4f(1f,0f,0f,1f),
   textColor      = Color4f(0.8f,0f,0f,1f),
   textBoxColor   = Color4f(1f,1f,1f,0.4f),
-  textBoxRegion  = Rect2i(700, 500, 100, 100)
+  textBoxRegion  = Rect2i(700, 500, 100, 100),
 }
 
 private {
   OrthoMap!Tile _map;
   Camera        _camera;
   RowCol        _coordUnderMouse;
+  InputRange!RowCol _floodeffect;
 }
 
 static this() {
@@ -62,11 +64,14 @@ void onMouseClicked(int button) {
       _map.tileAt(coord).tint = tileHighlight;
     }
   }
-  else {
+  else if (button == 2) {
     // RMB clicked, iterate through all tiles to clear highlighting
-    foreach(ref tile ; _map) {
-      tile.tint = tileNormalTint;
-    }
+    //foreach(ref tile ; _map) {
+    //  tile.tint = tileNormalTint;
+    //}
+    auto terrain = _map.tileAt(_coordUnderMouse).terrainName;
+    _floodeffect = inputRangeObject(
+        _map.floodCoords!(x => x.terrainName == terrain)(_coordUnderMouse));
   }
 }
 
@@ -85,6 +90,11 @@ void onWASD(Vector2i direction) {
 
 void onUpdate(Backend backend, float time) {
   _camera.update(time);
+
+  if (_floodeffect !is null && !_floodeffect.empty) {
+    _map.tileAt(_floodeffect.front).tint = Color4f(0, 1f, 0f, 1f);
+    _floodeffect.popFront();
+  }
 
   backend.clearDisplay();
 
