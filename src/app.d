@@ -25,10 +25,16 @@ private enum {
   textBoxRegion  = Rect2i(700, 500, 100, 100),
 }
 
+private enum ToolType {
+  enclosure, /// on click, shade an area enclosed by walls
+  flood      /// on click, start flood filling all tiles with the same terrain as the current
+}
+
 private {
   OrthoMap!Tile _map;
   Camera        _camera;
   RowCol        _coordUnderMouse;
+  ToolType      _selectedTool;
   InputRange!RowCol _floodeffect;
 }
 
@@ -50,6 +56,7 @@ int main(char[][] args) {
   backend.onMouseMoved   = &onMouseMoved;
   backend.onWASD         = &onWASD;
   backend.onUpdate       = &onUpdate;
+  backend.onToggleTool   = &onToggleTool;
 
   int retval = backend.run(displaySize, frameRate);
   backend.destroy(); // cleanup is necessary for Dgame to avoid exiting with an error
@@ -58,20 +65,28 @@ int main(char[][] args) {
 
 void onMouseClicked(int button) {
   if (button == 1) {
-    // LMB clicked, highlight all tiles in the enclosed area around the mouse.
-    // if the mouse is not in an enclosed area, the returned range will be empty.
-    foreach(coord ; _map.enclosedCoords!(x => x.isObstruction)(_coordUnderMouse)) {
-      _map.tileAt(coord).tint = tileHighlight;
+    // LMB clicked, use the selected tool
+    final switch (_selectedTool) with (ToolType) {
+      case enclosure:
+        // highlight all tiles in the enclosed area around the mouse.
+        foreach(coord ; _map.enclosedCoords!(x => x.isObstruction)(_coordUnderMouse)) {
+          _map.tileAt(coord).tint = tileHighlight;
+        }
+        break;
+      case flood:
+        // flood all tiles with terrain the same as the current
+        auto terrain = _map.tileAt(_coordUnderMouse).terrainName;
+        // store the returned range so we can iterate over it each frame and 'animate' the effect.
+        _floodeffect = inputRangeObject(
+            _map.floodCoords!(x => x.terrainName == terrain)(_coordUnderMouse));
+        break;
     }
   }
-  else if (button == 2) {
+  else {
     // RMB clicked, iterate through all tiles to clear highlighting
-    //foreach(ref tile ; _map) {
-    //  tile.tint = tileNormalTint;
-    //}
-    auto terrain = _map.tileAt(_coordUnderMouse).terrainName;
-    _floodeffect = inputRangeObject(
-        _map.floodCoords!(x => x.terrainName == terrain)(_coordUnderMouse));
+    foreach(ref tile ; _map) {
+      tile.tint = tileNormalTint;
+    }
   }
 }
 
@@ -118,4 +133,8 @@ void onUpdate(Backend backend, float time) {
   backend.drawTextbox(textBoxRegion, info, textColor, textBoxColor);
 
   backend.flipDisplay();
+}
+
+void onToggleTool() {
+  _selectedTool = cast(ToolType) ((_selectedTool + 1) % (ToolType.max + 1));
 }

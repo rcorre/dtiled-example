@@ -32,6 +32,9 @@ class DGameBackend : Backend {
           if (ev.keyboard.key == Keyboard.Key.Esc) {
             _exit = true;
           }
+          else if (ev.keyboard.key == Keyboard.Key.Space) {
+            onToggleTool();
+          }
           else if (!ev.keyboard.isRepeat) {
             handleWASD(ev.keyboard.key, 1);
           }
@@ -66,7 +69,7 @@ class DGameBackend : Backend {
           _scrollDirection.x += factor;
           break;
         default:
-          return;
+          return; // not a movement key
       }
 
       onWASD(_scrollDirection);

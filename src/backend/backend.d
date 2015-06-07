@@ -13,6 +13,9 @@ abstract class Backend {
   /// Passed the current WASD direction (e.g. (1,1) if S and D are held)
   void function(Vector2i) onWASD;
 
+  /// user has pressed a button to toggle through available tools
+  void function() onToggleTool;
+
   /// Called for each new frame, passed a reference to the backend and the time elapsed
   void function(Backend, float) onUpdate;
 

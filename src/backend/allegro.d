@@ -67,6 +67,9 @@ class AllegroBackend : Backend {
           if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
             _exit = true; // press ESC to end game
           }
+          else if (event.keyboard.keycode == ALLEGRO_KEY_SPACE) {
+            onToggleTool();
+          }
           else {
             handleWASD(event);
           }
@@ -107,6 +110,7 @@ class AllegroBackend : Backend {
           _scrollDirection.x += factor;
           break;
         default:
+          return; // not a movement key
       }
 
       onWASD(_scrollDirection);
