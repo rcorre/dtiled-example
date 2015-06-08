@@ -22,7 +22,8 @@ private enum {
   tileHighlight  = Color4f(1f,0f,0f,1f),
   textColor      = Color4f(0.8f,0f,0f,1f),
   textBoxColor   = Color4f(1f,1f,1f,0.4f),
-  textBoxRegion  = Rect2i(700, 500, 100, 100),
+  tileInfoRegion = Rect2i(700, 500, 100, 100),
+  toolInfoRegion = Rect2i( 20, 550, 150, 50),
 }
 
 private enum ToolType {
@@ -129,8 +130,15 @@ void onUpdate(Backend backend, float time) {
 
   // draw a textbox showing info on the tile currently under the mouse
   auto tile = _map.tileAt(_coordUnderMouse);
-  auto info = [ tile.terrainName, tile.featureName, tile.isObstruction ? "Obstruction" : "" ];
-  backend.drawTextbox(textBoxRegion, info, textColor, textBoxColor);
+  auto tileInfo = [ tile.terrainName, tile.featureName, tile.isObstruction ? "Obstruction" : "" ];
+  backend.drawTextbox(tileInfoRegion, tileInfo, textColor, textBoxColor);
+
+  // draw text for the current tool
+  auto toolInfo = [
+    "tool: %s".format(_selectedTool),
+    "Press SPACE to change"
+  ];
+  backend.drawTextbox(toolInfoRegion, toolInfo, textColor, textBoxColor);
 
   backend.flipDisplay();
 }
