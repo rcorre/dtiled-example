@@ -5,16 +5,6 @@
 	"authors": ["rcorre"],
   "configurations": [
     {
-      "name": "dgame",
-      "targetType": "executable",
-      "versions": ["DGameBackend"],
-      "excludedSourceFiles": ["src/backend/allegro.d"],
-      "dependencies": {
-        "dgame": "~>0.5.0",
-        "dtiled": { "path": "../dtiled" }
-      }
-    },
-    {
       "name": "allegro",
       "targetType": "executable",
       "versions": ["AllegroBackend"],
@@ -25,6 +15,16 @@
       },
       "subConfigurations": {
         "allegro": "all-addons"
+      }
+    },
+    {
+      "name": "dgame",
+      "targetType": "executable",
+      "versions": ["DGameBackend"],
+      "excludedSourceFiles": ["src/backend/allegro.d"],
+      "dependencies": {
+        "dgame": "~>0.5.0",
+        "dtiled": { "path": "../dtiled" }
       }
     }
   ]
