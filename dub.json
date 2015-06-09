@@ -1,8 +1,8 @@
 {
-	"name": "dtiled-example-allegro",
-	"description": "An example of rendering a Tiled map with Allegro",
-	"copyright": "Copyright © 2015, rcorre",
-	"authors": ["rcorre"],
+  "name": "dtiled-example-allegro",
+  "description": "An example of rendering a Tiled map with Allegro",
+  "copyright": "Copyright © 2015, rcorre",
+  "authors": ["rcorre"],
   "configurations": [
     {
       "name": "allegro",
