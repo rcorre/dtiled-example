@@ -3,9 +3,7 @@ import std.range : InputRange, inputRangeObject;
 import std.string : toStringz;
 
 // dtiled
-import dtiled.map;
-import dtiled.coords;
-import dtiled.algorithm;
+import dtiled;
 
 // local
 import camera;
@@ -85,7 +83,7 @@ void onMouseClicked(int button) {
   }
   else {
     // RMB clicked, iterate through all tiles to clear highlighting
-    foreach(ref tile ; _map) {
+    foreach(ref tile ; _map.tiles) {
       tile.tint = tileNormalTint;
     }
   }
@@ -117,7 +115,7 @@ void onUpdate(Backend backend, float time) {
   // draw the map tiles
   backend.startDrawingMap(_camera.offset);
 
-  foreach(coord, tile ; _map) {
+  foreach(coord, tile ; _map.tiles) {
     auto pos = _map.tileOffset(coord).as!Vector2f;
     backend.drawTile(pos, tile.terrainRect, tile.tint);
 

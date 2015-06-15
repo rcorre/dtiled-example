@@ -71,5 +71,5 @@ auto buildMap(string dataPath) {
           .array)
       .array;                          // create an array of all the rows
 
-    return OrthoMap!Tile(data.tileWidth, data.tileHeight, tiles);
+    return OrthoMap!Tile(tiles, data.tileWidth, data.tileHeight);
 }
