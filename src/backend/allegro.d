@@ -94,7 +94,7 @@ class AllegroBackend : Backend {
     }
 
     void handleWASD(in ALLEGRO_EVENT ev) {
-      float factor = (ev.type == ALLEGRO_EVENT_KEY_DOWN) ? 1 : -1;
+      int factor = (ev.type == ALLEGRO_EVENT_KEY_DOWN) ? 1 : -1;
 
       switch(ev.keyboard.keycode) {
         case ALLEGRO_KEY_W:
