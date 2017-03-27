@@ -140,7 +140,7 @@ override:
 
   /// Draw a textbox containing the given lines of text.
   void drawTextbox(Rect2i rect, string[] lines, Color4f textColor, Color4f boxColor) {
-    Shape box = new Shape(Geometry.Quad,
+    Shape box = new Shape(Geometry.Quads,
       [
         Vertex(rect.x    , rect.y     ),
         Vertex(rect.right, rect.y     ),
