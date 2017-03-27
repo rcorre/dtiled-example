@@ -3,7 +3,7 @@
 	"versions": {
 		"jsonizer": "0.5.2",
 		"derelict-util": "2.0.4",
-		"dgame": "0.5.3",
+		"dgame": "0.6.5",
 		"derelict-gl3": "1.0.17",
 		"derelict-sdl2": "1.9.7",
 		"dtiled": "0.3.1",
