@@ -23,7 +23,7 @@
       "versions": ["DGameBackend"],
       "excludedSourceFiles": ["src/backend/allegro.d"],
       "dependencies": {
-        "dgame": "~>0.5.0",
+        "dgame": "~>0.6.0",
         "dtiled": ">=0.2.0"
       }
     }
